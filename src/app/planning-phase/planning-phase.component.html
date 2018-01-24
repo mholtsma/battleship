@@ -1,0 +1,33 @@
+<h1>{{name1}} Position Your Ships {{rowNum}}{{colNum}}</h1>
+
+<h4>Ships Left to Position: </h4>
+<div class="row">
+  <h4 *ngFor="let ship of shipList" class="col-sm-1">{{ship}}</h4>
+</div>
+<div style="margin-top:2%;">
+  <div class="board-rows">
+    <div class="board-columns" *ngFor="let item of grid; index as i">
+      <div
+           *ngFor="let obj of item;index as j"
+           [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
+           class="square"
+           (click)="putShip(i,j)"
+           >
+      {{obj}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:2%;">
+  <button (click)="goToEndPhase()" class="btn">go to endphase</button>
+</div>
+
+
+
+
+
+
+
+
+
