@@ -17,12 +17,6 @@ export class BeginPhaseComponent implements OnInit {
   constructor(private gameService: GameService, private router: Router) { }
 
   ngOnInit() {
-    //this.getNames();
-  }
-
-  getNames(): void {
-    this.gameService.getPlayerNames()
-      .subscribe(gameObject => this.gameObject = gameObject);
   }
 
   startGame(player1Name: string, player2Name: string) {

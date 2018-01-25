@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Game } from './game';
+import { Game, PlayerTurnInfo } from './game';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 
@@ -15,25 +15,49 @@ export class GameService {
     return of ('success');
   }
 
-  getPlayerNames(): Observable<Game> {
-    return of({ player1Name: this.game.player1Name, player2Name: this.game.player2Name });
+  getPlayer1Name(): Observable<string> {
+    return of(this.game.player1Name);
   }
 
-  putPlayerBoard(gameBoard: Array<Array<string>>): Observable<string> {
+  getPlayer2Name(): Observable<string> {
+    return of(this.game.player2Name);
+  }
+
+  putPlayerShipBoard(gameBoard: Array<Array<string>>): Observable<string> {
     if (this.game.isPlayer1Turn === true) {
-      this.game.player1Board = gameBoard;
+      this.game.player1ShipBoard = gameBoard;
     } else {
-      this.game.player2Board = gameBoard;
+      this.game.player2ShipBoard = gameBoard;
     }
     return of('success');
   }
 
-  getPlayer1Board(): Observable<Game> {
-    return of({ player1Board: this.game.player1Board })
+  putPlayerFireBoard(gameBoard: Array<Array<string>>): Observable<string> {
+    if (this.game.isPlayer1Turn === true) {
+      this.game.player1FireBoard = gameBoard;
+    } else {
+      this.game.player2FireBoard = gameBoard;
+    }
+    return of('success');
   }
 
-  getPlayer2Board(): Observable<Game> {
-    return of({ player2Board: this.game.player2Board })
+  //function returns what is necessary for a players turn to proceed
+  setUpTurn(): Observable<PlayerTurnInfo> {
+    if (this.game.isPlayer1Turn === true) {
+      return of({
+        playerName: this.game.player1Name,
+        shipBoard: this.game.player1ShipBoard,
+        fireBoard: this.game.player1FireBoard,
+        isPlayer1Turn: this.game.isPlayer1Turn
+      })
+    } else {
+      return of({
+        playerName: this.game.player2Name,
+        shipBoard: this.game.player2ShipBoard,
+        fireBoard: this.game.player2FireBoard,
+        isPlayer1Turn: this.game.isPlayer1Turn
+      })
+    }
   }
 
   nextTurn(): Observable<string> {
@@ -47,5 +71,43 @@ export class GameService {
 
   getCurrentTurn(): Observable<boolean> {
     return of(this.game.isPlayer1Turn);
+  }
+
+  calculateHit(i: number, j: number): Observable<string> {
+    var rtnString;
+    if (this.game.isPlayer1Turn === true) {
+      rtnString = this.checkShipBoard(i, j, this.game.player2ShipBoard);
+      if (rtnString === 'hit') {
+        this.game.player1HitCounter += 1;
+        if (this.game.player1HitCounter === 17) {
+          return of('win');
+        }
+      }
+      return of(rtnString);
+    } else {
+      rtnString = this.checkShipBoard(i, j, this.game.player1ShipBoard);
+      if (rtnString === 'hit') {
+        this.game.player2HitCounter += 1;
+        if (this.game.player2HitCounter === 17) {
+          return of('win');
+        }
+      }
+      return of(rtnString);
+    }
+  }
+
+  checkShipBoard(i: number, j: number, shipBoard: Array<Array<string>>) {
+    if (shipBoard[i][j] === 'f') {
+      return 'already taken';
+    } else {
+      if (shipBoard[i][j] === 'b') {
+        shipBoard[i][j] = 'f';
+
+        return 'hit';
+      } else {
+        shipBoard[i][j] = 'm';
+        return 'miss'
+      }
+    }
   }
 }

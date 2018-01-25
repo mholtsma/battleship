@@ -15,7 +15,8 @@ const appRoutes: Routes = [
   { path: 'begin-phase', component: BeginPhaseComponent },
   { path: 'planning-phase1', component: PlanningPhaseComponent },
   { path: 'planning-phase2', component: PlanningPhaseComponent },
-  { path: 'play-phase', component: PlayPhaseComponent },
+  { path: 'play-phase1', component: PlayPhaseComponent },
+  { path: 'play-phase2', component: PlayPhaseComponent },
   { path: 'end-phase', component: EndPhaseComponent },
   { path: '', redirectTo: '/begin-phase', pathMatch: 'full' },
 ];

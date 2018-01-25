@@ -1,3 +1,25 @@
-<p>
-  play-phase works!
-</p>
+<h1>Current Status of Your Ships</h1>
+<div style="margin-top:2%;">
+  <div class="board-rows">
+    <div class="board-columns" *ngFor="let item of shipGrid; index as i">
+      <div *ngFor="let obj of item;index as j"
+           [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
+           class="square">
+        {{obj}}
+      </div>
+    </div>
+  </div>
+</div>
+<h1>{{playerName}} Choose Where to Fire {{rowNum}}{{colNum}}</h1>
+<div style="margin-top:2%;">
+  <div class="board-rows">
+    <div class="board-columns" *ngFor="let item of fireGrid; index as i">
+      <div *ngFor="let obj of item;index as j"
+           [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
+           class="square"
+           (click)="sendAttack(i,j)">
+        {{obj}}
+      </div>
+    </div>
+  </div>
+</div>

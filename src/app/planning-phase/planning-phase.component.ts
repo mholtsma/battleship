@@ -24,18 +24,17 @@ export class PlanningPhaseComponent implements OnInit {
   playerBoard: any;
   shipNum: number;
   drawing: boolean;
-  currentTurn: boolean;
+  player1Turn: boolean;
+  shipLocations: Map<string, string>;
 
   constructor(private router: Router, private gameService: GameService) { }
 
   ngOnInit() {
+    this.shipLocations = new Map<string, string>();
     this.drawing = false;
     this.rowNum = 0;
     this.shipNum = 0;
     this.colNum = 0;
-    this.getNames();
-    this.name1 = this.gameObject.player1Name;
-    this.name2 = this.gameObject.player2Name;
     this.grid = [
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
       [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
@@ -62,11 +61,6 @@ export class PlanningPhaseComponent implements OnInit {
     ];
     this.shipList = ['Carrier', 'Battleship', 'Cruiser', 'Submarine', 'Destroyer'];
     this.selectedShip = this.shipList[this.shipNum];
-  }
-
-  getNames(): void {
-    this.gameService.getPlayerNames()
-      .subscribe(gameObject => this.gameObject = gameObject);
   }
 
   goToEndPhase() {
@@ -327,56 +321,80 @@ export class PlanningPhaseComponent implements OnInit {
     }
   }
 
+  setVerticalShip(i,j) {
+    for (var x = 0; x < this.currentShipLength; x++) {
+      if (this.playerBoard[i + x][j] === 'b') {
+        return;
+      }
+    }
+    for (var x = 0; x < this.currentShipLength; x++) {
+      var tmp = i + x;
+      var locationKey = tmp + ', ' + j;
+      this.shipLocations.set(locationKey, this.selectedShip);
+      this.playerBoard[i + x][j] = 'b';
+      this.grid[i + x][j] = 'b';
+    }
+    this.shipNum += 1;
+    this.selectedShip = this.shipList[this.shipNum];
+    this.rowNum = 0;
+    this.colNum = 0;
+    this.gameService.putPlayerShipBoard(this.playerBoard)
+      .subscribe(result => {
+        console.log(result);
+      });
+  }
+
+  setHorizontalShip(i, j) {
+    for (var x = 0; x < this.currentShipLength; x++) {
+      if (this.playerBoard[i][j + x] === 'b') {
+        return;
+      }
+    }
+    for (var x = 0; x < this.currentShipLength; x++) {
+      var tmp = j + x;
+      var locationKey = tmp + ', ' + i;
+      this.shipLocations.set(locationKey, this.selectedShip);
+      this.playerBoard[i][j + x] = 'b';
+      this.grid[i][j + x] = 'b';
+    }
+    this.selectedShip = this.shipList[this.shipNum++];
+    this.rowNum = 0;
+    this.colNum = 0;
+    this.gameService.putPlayerShipBoard(this.playerBoard)
+      .subscribe(result => {
+        console.log(result);
+      });
+  }
+
   setShip() {
     var i = this.rowNum;
     var j = this.colNum;
     if (this.isVertical === true) {
-      for (var x = 0; x < this.currentShipLength; x++) {
-        if (this.playerBoard[i + x][j] === 'b') {
-          return;
-        } 
-      }
-      for (var x = 0; x < this.currentShipLength; x++) {
-        this.playerBoard[i + x][j] = 'b';
-        this.grid[i + x][j] = 'b';
-      }
-      this.shipNum += 1;
-      this.selectedShip = this.shipList[this.shipNum];
-      this.rowNum = 0;
-      this.colNum = 0;
-      this.gameService.putPlayerBoard(this.playerBoard)
-        .subscribe(result => {
-          console.log(result);
-        });
+      this.setVerticalShip(i, j);
     } else {
-      for (var x = 0; x < this.currentShipLength; x++) {
-        if (this.playerBoard[i][j + x] === 'b') {
-          return;
-        }
-      }
-      for (var x = 0; x < this.currentShipLength; x++) {
-        this.playerBoard[i][j + x] = 'b';
-        this.grid[i][j+x] = 'b';
-      }
-      this.selectedShip = this.shipList[this.shipNum++];
-      this.rowNum = 0;
-      this.colNum = 0;
-      this.gameService.putPlayerBoard(this.playerBoard)
-        .subscribe(result => {
-          console.log(result);
-        });
+      this.setHorizontalShip(i, j);
     }
     this.gameService.getCurrentTurn()
       .subscribe(result => {
         console.log(result);
-        this.currentTurn = result;
+        this.player1Turn = result;
       });
-    if (this.shipNum === this.shipList.length - 1) {
-      this.gameService.nextTurn()
-        .subscribe(result => {
-          console.log(result);
-          this.router.navigate(['/planning-phase2']);
-        });
+    if (this.player1Turn === true) {
+      if (this.shipNum === this.shipList.length) {
+        this.gameService.nextTurn()
+          .subscribe(result => {
+            console.log(result);
+            this.router.navigate(['/planning-phase2']);
+          });
+      }
+    } else {
+      if (this.shipNum === this.shipList.length) {
+        this.gameService.nextTurn()
+          .subscribe(result => {
+            console.log(result);
+            this.router.navigate(['/play-phase1']);
+          });
+      }
     }
     this.drawing = false;
   }
