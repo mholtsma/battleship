@@ -1,25 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from "../game.service";
+import { Router } from "@angular/router";
 
 @Component({
-  selector: 'app-end-phase',
-  templateUrl: './end-phase.component.html',
-  styleUrls: ['./end-phase.component.css']
+  selector: 'app-phase-transition',
+  templateUrl: './phase-transition.component.html',
+  styleUrls: ['./phase-transition.component.css']
 })
-export class EndPhaseComponent implements OnInit {
+export class PhaseTransitionComponent implements OnInit {
   playerName: string;
+  isPlayer1Turn: boolean;
 
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService, private router: Router) { }
 
   ngOnInit() {
-    this.setName();
-  }
-
-  setName() {
     this.gameService.getCurrentTurn()
       .subscribe(result => {
         console.log(result);
-        if (result === true) {
+        this.isPlayer1Turn = result;
+        if (this.isPlayer1Turn === true) {
           this.gameService.getPlayer1Name()
             .subscribe(result => {
               console.log(result);
@@ -33,6 +32,14 @@ export class EndPhaseComponent implements OnInit {
             });
         }
       });
+  }
+
+  goToPlayPhase() {
+    if (this.isPlayer1Turn === true) {
+      this.router.navigate(['/play-phase1']);
+    } else {
+      this.router.navigate(['/play-phase2']);
+    }
   }
 
 }

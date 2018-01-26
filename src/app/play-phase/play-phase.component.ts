@@ -18,11 +18,16 @@ export class PlayPhaseComponent implements OnInit {
   rowNum: number;
   colNum: number;
   playerName: string;
+  afterFireMsg: string;
+  shotTaken: boolean;
+
 
   constructor(private gameService: GameService, private router: Router) { }
 
   ngOnInit() {
     this.setUpTurn();
+    this.shotTaken = false;
+    this.afterFireMsg = '';
   }
 
   //function that will be called at the beginning
@@ -52,11 +57,13 @@ export class PlayPhaseComponent implements OnInit {
   }
 
   sendAttack(i: number, j: number) {
-    this.gameService.calculateHit(i,j)
-      .subscribe(result => {
-        console.log(result);
-        this.calculateHit(i, j, result);
-      });
+    if (this.shotTaken === false) {
+      this.gameService.calculateHit(i, j)
+        .subscribe(result => {
+          console.log(result);
+          this.calculateHit(i, j, result);
+        });
+    }
   }
 
   calculateHit(i: number, j:number, result: string) {
@@ -66,17 +73,29 @@ export class PlayPhaseComponent implements OnInit {
         break;
       case 'hit':
         this.fireGrid[i][j] = 'f';
-        this.nextTurn();
+        this.afterFireMsg = 'Ship Hit!';
+        this.shotTaken = true;
+        break;
+      case 'sunk':
+        this.fireGrid[i][j] = 'f';
+        this.afterFireMsg = 'Ship Sunk!';
+        this.shotTaken = true;
         break;
       case 'miss':
         this.fireGrid[i][j] = 'm';
-        this.nextTurn();
+        this.afterFireMsg = 'Miss!';
+        this.shotTaken = true;
         break;
       case 'already taken':
+        this.afterFireMsg = 'You Have Already Fired There!';
         break;
       default:
         break;
     }
+  }
+
+  endTurn() {
+    this.nextTurn();
   }
 
   putFireBoard() {
@@ -91,11 +110,7 @@ export class PlayPhaseComponent implements OnInit {
     this.gameService.nextTurn()
       .subscribe(result => {
         console.log(result);
-        if (this.isPlayer1Turn === true) {
-          this.router.navigate(['/play-phase2']);
-        } else {
-          this.router.navigate(['/play-phase1']);
-        }
+        this.router.navigate(['/transition']);
       });
   }
 

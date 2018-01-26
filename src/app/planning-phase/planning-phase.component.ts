@@ -10,8 +10,7 @@ import { Game } from '../game';
 })
 export class PlanningPhaseComponent implements OnInit {
   gameObject: Game;
-  name1: string;
-  name2: string;
+  playerName: string;
   grid: any;
   shipList: any;
   selectedShip: string;
@@ -30,6 +29,8 @@ export class PlanningPhaseComponent implements OnInit {
   constructor(private router: Router, private gameService: GameService) { }
 
   ngOnInit() {
+    this.getCurrentTurn();
+    this.getPlayerName();
     this.shipLocations = new Map<string, string>();
     this.drawing = false;
     this.rowNum = 0;
@@ -63,11 +64,31 @@ export class PlanningPhaseComponent implements OnInit {
     this.selectedShip = this.shipList[this.shipNum];
   }
 
-  goToEndPhase() {
-    this.router.navigate(['end-phase']);
+  getPlayerName() {
+    if (this.player1Turn === true) {
+      this.gameService.getPlayer1Name()
+        .subscribe(result => {
+          console.log(result);
+          this.playerName = result;
+        });
+    } else {
+      this.gameService.getPlayer2Name()
+        .subscribe(result => {
+          console.log(result);
+          this.playerName = result;
+        });
+    }
   }
 
-  changeColor(value: string) {
+  getCurrentTurn() {
+    this.gameService.getCurrentTurn()
+      .subscribe(result => {
+        console.log(result);
+        this.player1Turn = result;
+      });
+  }
+
+  changeColor(value: string): string {
     switch (value) {
       case 'c':
         return 'green';
@@ -129,7 +150,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++){
-      if (i + shipLength < this.grid.length) {
+      if (i + shipLength < this.grid.length && i >= 0 && j >= 0) {
         if (this.grid[i + x + 1][j] === 'b'){
           this.grid[i + x + 1][j] = 'b';
         } else {
@@ -149,7 +170,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (i + 1 < this.grid.length) {
+      if (i + 1 < this.grid.length && i >= 0 && j >= 0) {
         if (this.grid[i + 1][j + x] === 'b'){
           this.grid[i + 1][j + x] = 'b';
         } else {
@@ -169,7 +190,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (i + shipLength <= this.grid.length) {
+      if (i + shipLength <= this.grid.length && i >= 0 && j >= 0) {
         if (this.grid[i + x - 1][j] === 'b'){
           this.grid[i + x - 1][j] = 'b';
         } else {
@@ -189,7 +210,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (i - 1 >= 0) {
+      if (i - 1 >= 0 && i >= 0 && j >= 0) {
         if (this.grid[i - 1][j + x] === 'b'){
           this.grid[i - 1][j + x] = 'b';
         } else {
@@ -209,7 +230,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (j - 1 >= 0) {
+      if (j - 1 >= 0 && i >= 0 && j >= 0) {
         if (this.grid[i][j - 1] === 'b'){
           this.grid[i][j - 1] = 'b';
         } else {
@@ -230,7 +251,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (j - 1 >= 0) {
+      if (j - 1 >= 0 && i >= 0 && j >= 0) {
         if (this.grid[i][j + x - 1] === 'b'){
           this.grid[i][j + x - 1] = 'b';
         } else {
@@ -250,7 +271,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (j + 1 <= this.grid.length - 1) {
+      if (j + 1 <= this.grid.length - 1 && i >= 0 && j >= 0) {
         if (this.grid[i][j + 1] === 'b'){
           this.grid[i][j + 1] = 'b';
         } else {
@@ -271,7 +292,7 @@ export class PlanningPhaseComponent implements OnInit {
     this.rowNum = i;
     this.colNum = j;
     for (var x = 0; x < shipLength; x++) {
-      if (j + shipLength < this.grid.length) {
+      if (j + shipLength < this.grid.length && i >= 0 && j >= 0) {
         if (this.grid[i][j + x + 1] === 'b'){
           this.grid[i][j + x + 1] = 'b';
         } else {
@@ -374,13 +395,12 @@ export class PlanningPhaseComponent implements OnInit {
     } else {
       this.setHorizontalShip(i, j);
     }
-    this.gameService.getCurrentTurn()
-      .subscribe(result => {
-        console.log(result);
-        this.player1Turn = result;
-      });
     if (this.player1Turn === true) {
       if (this.shipNum === this.shipList.length) {
+        this.gameService.putShipLocations(this.shipLocations)
+          .subscribe(result => {
+            console.log(result);
+          });
         this.gameService.nextTurn()
           .subscribe(result => {
             console.log(result);
@@ -389,10 +409,14 @@ export class PlanningPhaseComponent implements OnInit {
       }
     } else {
       if (this.shipNum === this.shipList.length) {
+        this.gameService.putShipLocations(this.shipLocations)
+          .subscribe(result => {
+            console.log(result);
+          });
         this.gameService.nextTurn()
           .subscribe(result => {
             console.log(result);
-            this.router.navigate(['/play-phase1']);
+            this.router.navigate(['/transition']);
           });
       }
     }

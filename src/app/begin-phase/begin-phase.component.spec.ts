@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BeginPhaseComponent } from './begin-phase.component';
+import { Router } from '@angular/router';
+import { GameService } from "../game.service";
+import { Game } from '../game';
 
 describe('BeginPhaseComponent', () => {
   let component: BeginPhaseComponent;
@@ -8,7 +11,17 @@ describe('BeginPhaseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BeginPhaseComponent ]
+      declarations: [BeginPhaseComponent],
+      providers: [
+        {
+          provide: GameService,
+        useValue: {},
+        },
+        {
+          provide: Router,
+          useValue: {},
+        }
+      ]  
     })
     .compileComponents();
   }));
@@ -23,3 +36,5 @@ describe('BeginPhaseComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+
+

@@ -3,6 +3,20 @@ export class Game {
   player2Name = ' ';
   player1ShipLocations = new Map();
   player2ShipLocations = new Map();
+  player1ShipCounters = {
+    'carrier': 0,
+    'battleship': 0,
+    'cruiser': 0,
+    'submarine': 0,
+    'destroyer': 0
+  }
+  player2ShipCounters = {
+    'carrier': 0,
+    'battleship': 0,
+    'cruiser': 0,
+    'submarine': 0,
+    'destroyer': 0
+  }
   player1ShipBoard = [
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
     [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],

@@ -1,10 +1,12 @@
-<h1>Welcome to Battleship</h1>
-<div>
-  Player 1, what is your name?
-  <input #player1 type="text" placeholder="Player 1's Name" />
+<div class="container">
+  <h1>Welcome to Battleship</h1>
+  <div>
+    Player 1, what is your name?
+    <input #player1 type="text" placeholder="Player 1's Name" />
+  </div>
+  <div>
+    Player 2, what is your name?
+    <input #player2 type="text" placeholder="Player 2's Name" />
+  </div>
+  <button (click)="startGame(player1.value, player2.value)" class="btn btn-success">Start Game</button>
 </div>
-<div>
-  Player 2, what is your name?
-  <input #player2 type="text" placeholder="Player 2's Name" />
-</div>
-<button (click)="startGame(player1.value, player2.value)">Start Game</button>

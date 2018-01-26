@@ -78,26 +78,76 @@ export class GameService {
     if (this.game.isPlayer1Turn === true) {
       rtnString = this.checkShipBoard(i, j, this.game.player2ShipBoard);
       if (rtnString === 'hit') {
+        var ship = this.game.player1ShipLocations.get(i + ', ' + j);
+        if (this.game.player1ShipCounters[ship]){
+          this.game.player1ShipCounters[ship]++;
+        } else {
+          this.game.player1ShipCounters[ship] = 1;
+        }
         this.game.player1HitCounter += 1;
         if (this.game.player1HitCounter === 17) {
           return of('win');
+        }
+        if (this.checkIfSunk(this.game.player1ShipCounters[ship], ship) === 'sunk') {
+          return of('sunk');
         }
       }
       return of(rtnString);
     } else {
       rtnString = this.checkShipBoard(i, j, this.game.player1ShipBoard);
       if (rtnString === 'hit') {
+        var ship = this.game.player2ShipLocations.get(i + ', ' + j);
+        if (this.game.player2ShipCounters[ship]) {
+          this.game.player2ShipCounters[ship]++;
+        } else {
+          this.game.player2ShipCounters[ship] = 1;
+        }
         this.game.player2HitCounter += 1;
         if (this.game.player2HitCounter === 17) {
           return of('win');
+        }
+        if (this.checkIfSunk(this.game.player2ShipCounters[ship], ship) === 'sunk') {
+          return of('sunk');
         }
       }
       return of(rtnString);
     }
   }
 
+  checkIfSunk(hitCount: number, ship: string): string {
+    switch(ship) {
+      case 'Carrier':
+        if (hitCount === 5){
+          return 'sunk';
+        }
+        break;
+      case 'Battleship':
+        if (hitCount === 4) {
+          return 'sunk';
+        }
+        break;
+      case 'Cruiser':
+        if (hitCount === 3) {
+          return 'sunk';
+        }
+        break;
+      case 'Submarine':
+        if (hitCount === 3) {
+          return 'sunk';
+        }
+        break;
+      case 'Destroyer':
+        if (hitCount === 2) {
+          return 'sunk';
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
   checkShipBoard(i: number, j: number, shipBoard: Array<Array<string>>) {
-    if (shipBoard[i][j] === 'f') {
+    if (shipBoard[i][j] === 'f' || shipBoard[i][j] === 'm') {
       return 'already taken';
     } else {
       if (shipBoard[i][j] === 'b') {
@@ -109,5 +159,14 @@ export class GameService {
         return 'miss'
       }
     }
+  }
+
+  putShipLocations(locations: Map<string, string>): Observable<string> {
+    if (this.game.isPlayer1Turn === true) {
+      this.game.player1ShipLocations = locations;
+    } else {
+      this.game.player2ShipLocations = locations;
+    }
+    return of('success')
   }
 }

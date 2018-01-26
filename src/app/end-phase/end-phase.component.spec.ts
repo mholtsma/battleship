@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EndPhaseComponent } from './end-phase.component';
+import { GameService } from "../game.service";
+import { Game } from "../game";
 
 describe('EndPhaseComponent', () => {
   let component: EndPhaseComponent;
@@ -8,7 +10,8 @@ describe('EndPhaseComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EndPhaseComponent ]
+      declarations: [EndPhaseComponent],
+      providers: [GameService, Game] 
     })
     .compileComponents();
   }));

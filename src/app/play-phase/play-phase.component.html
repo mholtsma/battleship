@@ -1,25 +1,32 @@
-<h1>Current Status of Your Ships</h1>
-<div style="margin-top:2%;">
-  <div class="board-rows">
-    <div class="board-columns" *ngFor="let item of shipGrid; index as i">
-      <div *ngFor="let obj of item;index as j"
-           [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
-           class="square">
-        {{obj}}
+<div class="container">
+  <h1>Current Status of Your Ships</h1>
+  <p>This screen shows where your ships are and where your opponent is firing</p>
+  <div style="margin-top:2%;">
+    <div class="board-rows">
+      <div class="board-columns" *ngFor="let item of shipGrid; index as i">
+        <div *ngFor="let obj of item;index as j"
+             [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
+             class="square">
+          {{obj}}
+        </div>
       </div>
     </div>
   </div>
-</div>
-<h1>{{playerName}} Choose Where to Fire {{rowNum}}{{colNum}}</h1>
-<div style="margin-top:2%;">
-  <div class="board-rows">
-    <div class="board-columns" *ngFor="let item of fireGrid; index as i">
-      <div *ngFor="let obj of item;index as j"
-           [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
-           class="square"
-           (click)="sendAttack(i,j)">
-        {{obj}}
+  <h1>{{playerName}} Choose Where to Fire {{rowNum}}{{colNum}}</h1>
+  <p>This screen shows where you have fired and whether you have hit or missed(red sqaures are hits and yellow squares are misses)</p>
+  <p>Press the end turn button at the bottom when you are finished</p>
+  <h3 *ngIf="afterFireMsg.length">{{afterFireMsg}}</h3>
+  <div style="margin-top:2%; margin-bottom:2%;">
+    <div class="board-rows">
+      <div class="board-columns" *ngFor="let item of fireGrid; index as i">
+        <div *ngFor="let obj of item;index as j"
+             [ngStyle]="{'background': changeColor(obj), 'color': changeColor(obj)}"
+             class="square"
+             (click)="sendAttack(i,j)">
+          {{obj}}
+        </div>
       </div>
     </div>
   </div>
+  <button (click)="endTurn()" style="margin:1%;" class="btn btn-danger">End Turn</button>
 </div>
